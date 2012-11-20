@@ -10,6 +10,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <tags>Thrift</tags>
+	<releaseNotes>Version from this commit : https://github.com/brugidou/thrift/commit/c9e368018cb94e13dbfa000998b54dddb9a0d589</releaseNotes>
   </metadata>
   <files>
     <file src="bin\Release\Thrift.*" target="lib\net35" />
