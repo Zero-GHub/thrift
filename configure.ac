@@ -19,11 +19,11 @@
 
 AC_PREREQ(2.65)
 
-AC_INIT([thrift], [0.9.0])
+AC_INIT([thrift], [0.9.1])
 
 AC_CONFIG_AUX_DIR([.])
 
-AM_INIT_AUTOMAKE([1.9 tar-ustar])
+AM_INIT_AUTOMAKE([1.11 tar-ustar])
 PKG_PROG_PKG_CONFIG
 
 AC_ARG_VAR([PY_PREFIX], [Prefix for installing Python modules.
@@ -75,20 +75,6 @@ AC_ARG_VAR([CABAL_CONFIGURE_FLAGS],
 
 AC_SUBST(CABAL_CONFIGURE_FLAGS)
 
-AC_ARG_VAR([GOROOT], [Prefix for the Go source directory.
-                           (Normal --prefix is ignored for Go because
-                           Go has different conventions.)
-                           Default = "/usr/local/share/go"])
-AS_IF([test "x$GOROOT" = x], [GOROOT="/usr/local/share/go"])
-
-AC_ARG_VAR([GOARCH], [Architecture default for Go.
-                           Default = "amd64"])
-AS_IF([test "x$GOARCH" = x], [GOARCH="amd64"])
-
-AC_ARG_VAR([GOBIN], [Binary directory for Go.
-                           Default = "/usr/local/bin"])
-AS_IF([test "x$GOBIN" = x], [GOBIN="/usr/local/bin"])
-
 AC_ARG_VAR([D_IMPORT_PREFIX], [Prefix for installing D modules.
                            [INCLUDEDIR/d2]])
 AS_IF([test "x$D_IMPORT_PREFIX" = x], [D_IMPORT_PREFIX="${includedir}/d2"])
@@ -125,7 +111,7 @@ if test "$with_cpp" = "yes";  then
 
   AX_LIB_ZLIB([1.2.3])
   have_zlib=$success
-  
+
   AX_THRIFT_LIB(qt4, [Qt], yes)
   have_qt=no
   if test "$with_qt4" = "yes";  then
@@ -270,29 +256,8 @@ AM_CONDITIONAL(WITH_HASKELL, [test "$have_haskell" = "yes"])
 
 AX_THRIFT_LIB(go, [Go], yes)
 if test "$with_go" = "yes";  then
-  case X"$GOARCH" in
-  Xamd64)
-    GOARCH_NUM=6
-  	;;
-  X386)
-    GOARCH_NUM=8
-  	;;
-  Xarm)
-    GOARCH_NUM=5
-  	;;
-  *)
-    GOARCH_NUM=6
-    ;;
-  esac
-  GO_C=${GOBIN}/${GOARCH_NUM}g
-  GO_L=${GOBIN}/${GOARCH_NUM}l
-  GOMAKE=${GOBIN}/gomake
-  GOINSTALL=${GOBIN}/goinstall
-  AC_PATH_PROG([GO_C], [${GOARCH_NUM}g])
-  AC_PATH_PROG([GO_L], [${GOARCH_NUM}l])
-  AC_PATH_PROG([GOMAKE], [gomake])
-  AC_PATH_PROG([GOINSTALL], [goinstall])
-  if [[ -x "$GO_C" -a -x "$GO_L" -a -x "$GOMAKE" -a -x "$GOINSTALL" ]] ; then
+  AC_PATH_PROG([GO], [go])
+  if [[ -x "$GO" ]] ; then
     have_go="yes"
   fi
 fi
@@ -435,6 +400,7 @@ AC_CHECK_HEADERS([openssl/ssl.h])
 AC_CHECK_HEADERS([openssl/rand.h])
 AC_CHECK_HEADERS([openssl/x509v3.h])
 AC_CHECK_HEADERS([sched.h])
+AC_CHECK_HEADERS([wchar.h])
 
 AC_CHECK_LIB(pthread, pthread_create)
 dnl NOTE(dreiss): I haven't been able to find any really solid docs
@@ -573,6 +539,16 @@ fi
 AM_CONDITIONAL([WITH_BOOSTTHREADS], [test "x[$]ENABLE_BOOSTTHREADS" = "x1"])
 
 AC_CONFIG_HEADERS(config.h:config.hin)
+AC_CONFIG_HEADERS(lib/cpp/src/thrift/config.h:config.hin)
+# gruard against pre defined config.h
+AH_TOP([
+#ifndef CONFIG_H
+#define CONFIG_H 
+])
+AH_BOTTOM([
+#endif
+])
+
 
 AC_CONFIG_FILES([
   Makefile
@@ -593,6 +569,8 @@ AC_CONFIG_FILES([
   lib/d/Makefile
   lib/d/test/Makefile
   lib/erl/Makefile
+  lib/go/Makefile
+  lib/go/test/Makefile
   lib/hs/Makefile
   lib/java/Makefile
   lib/js/test/Makefile
@@ -610,7 +588,17 @@ AC_CONFIG_FILES([
   test/perl/Makefile
   test/py/Makefile
   test/py.twisted/Makefile
+  test/py.tornado/Makefile
   test/rb/Makefile
+  tutorial/Makefile
+  tutorial/cpp/Makefile
+  tutorial/go/Makefile
+  tutorial/java/Makefile
+  tutorial/js/Makefile
+  tutorial/py/Makefile
+  tutorial/py.twisted/Makefile
+  tutorial/py.tornado/Makefile
+  tutorial/rb/Makefile
 ])
 
 AC_OUTPUT
@@ -685,11 +673,8 @@ fi
 if test "$have_go" = "yes" ; then
   echo
   echo "Go Library:"
-  echo "   Using GOROOT............... : $GOROOT"
-  echo "   Using GOBIN................ : $GOBIN"
-  echo "   Using GOARCH............... : $GOARCH"
-  echo "   Using GO Compiler.......... : $GO_C"
-  echo "   Using GO Linker............ : $GO_L"
+  echo "   Using Go................... : $GO"
+  echo "   Using Go version........... : $($GO version)"
 fi
 if test "$have_d" = "yes" ; then
   echo

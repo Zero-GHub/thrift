@@ -20,7 +20,7 @@
 #ifndef _THRIFT_TRANSPORT_TSERVERWINPIPES_H_
 #define _THRIFT_TRANSPORT_TSERVERWINPIPES_H_ 1
 
-#include "TServerTransport.h"
+#include <thrift/transport/TServerTransport.h>
 #include <boost/shared_ptr.hpp>
 #ifndef _WIN32
 #  include "TServerSocket.h"
@@ -56,6 +56,7 @@ class TPipeServer : public TServerTransport {
 
   bool TCreateNamedPipe();
   bool TCreateAnonPipe();
+  void createWakeupEvent();
 
  public:
   //Accessors
@@ -77,8 +78,10 @@ class TPipeServer : public TServerTransport {
   uint32_t maxconns_;
   HANDLE PipeW_; //Anonymous Pipe (W)
   HANDLE ClientAnonRead, ClientAnonWrite; //Client side anonymous pipe handles
+  HANDLE wakeup;  // wake up event
   //? Do we need duplicates to send to client?
   bool isAnonymous;
+  bool stop_; // stop flag
 };
 #else //_WIN32
 //*NIX named pipe implementation uses domain socket

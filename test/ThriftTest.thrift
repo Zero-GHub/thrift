@@ -35,6 +35,12 @@ namespace go ThriftTest
 namespace php ThriftTest
 namespace delphi Thrift.Test
 namespace cocoa ThriftTest
+
+// Presence of namespaces and sub-namespaces for which there is
+// no generator should compile with warnings only
+namespace noexist ThriftTest
+namespace cpp.noexist ThriftTest
+
 namespace * thrift.test
 
 /**
@@ -61,6 +67,8 @@ struct Bonk
   1: string message,
   2: i32 type
 }
+
+typedef map<string,Bonk> MapType
 
 struct Bools {
   1: bool im_true,

@@ -22,12 +22,21 @@ stubs: ../ThriftTest.thrift
 	$(THRIFT) --gen js:node ../ThriftTest.thrift
 
 check: stubs
+	@if which nodeunit &> /dev/null ; then \
+		echo "   Testing thrift/binary"; \
+		NODE_PATH=../../lib/nodejs/lib:../../lib/nodejs/lib/thrift:$(NODE_PATH) nodeunit ../../lib/nodejs/test/binary.test.js; \
+	fi
+	@if which node &> /dev/null ; then \
+		echo "   Testing Client/Server"; \
+		timeout -s14 5 $(MAKE) server & \
+		sleep 1; $(MAKE) client; sleep 2; \
+	fi
 
 clean-local:
 	$(RM) -r gen-nodejs
 
-server: stubs
-	NODE_PATH=../../lib/nodejs/lib:../../lib/nodejs/lib/thrift node server.js
+server:
+	NODE_PATH=../../lib/nodejs/lib:../../lib/nodejs/lib/thrift:$(NODE_PATH) node server.js
 
-client: stubs
-	NODE_PATH=../../lib/nodejs/lib:../../lib/nodejs/lib/thrift node client.js
+client:
+	NODE_PATH=../../lib/nodejs/lib:../../lib/nodejs/lib/thrift:$(NODE_PATH) node client.js

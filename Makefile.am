@@ -19,26 +19,29 @@
 
 ACLOCAL_AMFLAGS = -I ./aclocal
 
-SUBDIRS = compiler/cpp lib
+SUBDIRS = compiler/cpp lib tutorial
 
 if WITH_TESTS
 SUBDIRS += test
 endif
 
+SUBDIRS += tutorial
+
 dist-hook:
-	find $(distdir) -type f \( -iname ".deps" -or -iname ".libs" -or -iname ".gitignore" \
-		-or -iname ".DS_Store" -or -iname "._*" \) | xargs rm -rf
+	find $(distdir) -type f \( -iname ".DS_Store" -or -iname "._*" -or -iname ".gitignore" \) | xargs rm -rf
+	find $(distdir) -type d \( -iname ".deps" -or -iname ".libs" \) | xargs rm -rf
 	find $(distdir) -type d \( -iname ".svn" -or -iname ".git" \) | xargs rm -rf
 
 print-version:
 	@echo $(VERSION)
 
 EXTRA_DIST = \
- 			doc \
-			tutorial \
-			contrib \
-			CONTRIBUTORS \
-			LICENSE \
-			CHANGES \
-			DISCLAIMER \
-			NOTICE
+	.travis.yml \
+	contrib \
+	debian \
+	doc \
+	doap.rdf \
+	sonar-project.properties \
+	LICENSE \
+	CHANGES \
+	NOTICE

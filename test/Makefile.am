@@ -34,6 +34,7 @@ endif
 if WITH_PYTHON
 SUBDIRS += py
 SUBDIRS += py.twisted
+SUBDIRS += py.tornado
 endif
 
 if WITH_RUBY
@@ -53,7 +54,6 @@ check-local:
 EXTRA_DIST = \
 	test.sh \
 	cpp \
-	csharp \
 	hs \
 	nodejs \
 	ocaml \
@@ -61,6 +61,7 @@ EXTRA_DIST = \
 	php \
 	py \
 	py.twisted \
+	py.tornado \
 	rb \
 	threads \
 	AnnotationTest.thrift \
@@ -69,6 +70,7 @@ EXTRA_DIST = \
 	DebugProtoTest.thrift \
 	DenseLinkingTest.thrift \
 	DocTest.thrift \
+	Include.thrift \
 	JavaBeansTest.thrift \
 	ManyOptionals.thrift \
 	ManyTypedefs.thrift \

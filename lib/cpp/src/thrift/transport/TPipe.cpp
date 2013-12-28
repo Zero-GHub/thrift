@@ -17,8 +17,8 @@
 * under the License.
 */
 
-#include "TTransportException.h"
-#include "TPipe.h"
+#include <thrift/transport/TTransportException.h>
+#include <thrift/transport/TPipe.h>
 
 namespace apache { namespace thrift { namespace transport {
 
@@ -108,7 +108,7 @@ void TPipe::open() {
               NULL);          // no template file
 
     if (hPipe_ == INVALID_HANDLE_VALUE)
-      sleep(SleepInterval);
+      ::Sleep(SleepInterval);
     else
       break;
   }
